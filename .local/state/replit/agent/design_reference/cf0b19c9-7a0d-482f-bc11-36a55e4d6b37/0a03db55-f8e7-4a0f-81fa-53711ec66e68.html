@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediClinic Pro - Système de Gestion Clinique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        medical: {
+                            primary: '#1e40af',
+                            secondary: '#3b82f6',
+                            success: '#059669',
+                            warning: '#f59e0b',
+                            danger: '#ef4444',
+                            light: '#f8fafc',
+                            dark: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans bg-gray-50 text-gray-900">
+    <!-- @COMPONENT: LoginScreen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-medical-primary to-medical-secondary p-4">
+        <div class="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8">
+            <div class="text-center">
+                <!-- Medical cross icon representing the clinic logo -->
+                <div class="mx-auto h-16 w-16 bg-medical-primary rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-hospital text-white text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">MediClinic Pro</h2>
+                <p class="mt-2 text-gray-600">Système de Gestion Clinique</p>
+            </div>
+            <form class="mt-8 space-y-6" data-implementation="Connect to Flask authentication API">
+                <div class="space-y-4">
+                    <div>
+                        <label for="username" class="sr-only">Nom d'utilisateur</label>
+                        <input id="username" name="username" type="text" required 
+                               class="relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-medical-primary focus:border-transparent" 
+                               placeholder="Nom d'utilisateur" data-bind="auth.username">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Mot de passe</label>
+                        <input id="password" name="password" type="password" required 
+                               class="relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-medical-primary focus:border-transparent" 
+                               placeholder="Mot de passe" data-bind="auth.password">
+                    </div>
+                    <div>
+                        <select class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-medical-primary focus:border-transparent" data-bind="auth.role">
+                            <option value="">Sélectionner un rôle</option>
+                            <option value="superviseur">Superviseur</option>
+                            <option value="medecin">Médecin</option>
+                            <option value="secretaire">Secrétaire</option>
+                            <option value="pharmacien">Pharmacien</option>
+                            <option value="caissier">Caissier</option>
+                            <option value="comptable">Comptable</option>
+                            <option value="intervenant">Intervenant Externe</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" 
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-medical-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-medical-primary transition duration-300"
+                        data-event="click:handleLogin">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Se connecter
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoginScreen -->
+
+    <!-- @COMPONENT: MainApplication [hidden by default] -->
+    <div id="mainApp" class="hidden min-h-screen flex bg-gray-50">
+        <!-- @COMPONENT: Sidebar -->
+        <div class="w-64 bg-white shadow-lg border-r border-gray-200">
+            <div class="flex items-center justify-center h-16 border-b border-gray-200 bg-medical-primary">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-hospital text-white text-xl"></i>
+                    <span class="text-white font-bold text-lg">MediClinic Pro</span>
+                </div>
+            </div>
+            
+            <!-- User Profile Section -->
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-medical-secondary rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-md text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900" data-bind="user.name">Dr. Marie Dubois</p>
+                        <p class="text-xs text-gray-500" data-bind="user.role">Médecin</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="mt-4 px-2 space-y-1">
+                <!-- @MAP: navigationItems.map(item => ( -->
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-medical-primary bg-blue-50 border-r-2 border-medical-primary" data-menu="dashboard">
+                    <i class="fas fa-tachometer-alt mr-3 text-medical-primary"></i>
+                    Tableau de bord
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="patients">
+                    <i class="fas fa-users mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Patients
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="agenda">
+                    <i class="fas fa-calendar-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Agenda
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="consultations">
+                    <i class="fas fa-stethoscope mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Consultations
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="pharmacie">
+                    <i class="fas fa-pills mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Pharmacie
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="facturation">
+                    <i class="fas fa-file-invoice-dollar mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Facturation
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="caisse">
+                    <i class="fas fa-cash-register mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Caisse
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="assurances">
+                    <i class="fas fa-shield-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Assurances
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="commissions">
+                    <i class="fas fa-percent mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Commissions
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="depenses">
+                    <i class="fas fa-receipt mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Dépenses
+                </a>
+                <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900" data-menu="rapports">
+                    <i class="fas fa-chart-bar mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                    Rapports
+                </a>
+                <!-- @END_MAP )) -->
+            </nav>
+
+            <!-- Logout Button -->
+            <div class="absolute bottom-4 left-4 right-4">
+                <button class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition duration-150"
+                        data-event="click:handleLogout">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: MainContent -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-semibold text-gray-900" data-bind="currentPage.title">Tableau de bord</h1>
+                    <div class="flex items-center space-x-4">
+                        <!-- Notifications -->
+                        <div class="relative">
+                            <button class="p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-medical-primary rounded-lg">
+                                <i class="fas fa-bell text-lg"></i>
+                                <span class="absolute -top-1 -right-1 h-5 w-5 bg-medical-danger rounded-full flex items-center justify-center text-xs text-white">3</span>
+                            </button>
+                        </div>
+                        <!-- Quick Actions -->
+                        <button class="bg-medical-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-150" data-event="click:showQuickActions">
+                            <i class="fas fa-plus mr-2"></i>
+                            Nouvelle Action
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                <!-- @COMPONENT: DashboardContent -->
+                <div id="dashboardContent" class="content-section">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- @MAP: statsCards.map(card => ( -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Patients aujourd'hui</p>
+                                    <p class="text-3xl font-bold text-gray-900" data-bind="stats.patientsToday">47</p>
+                                    <p class="text-sm text-medical-success mt-1">
+                                        <i class="fas fa-arrow-up"></i> +12% vs hier
+                                    </p>
+                                </div>
+                                <div class="h-12 w-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-users text-medical-primary text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Recettes du jour</p>
+                                    <p class="text-3xl font-bold text-gray-900" data-bind="stats.dailyRevenue">€2,847</p>
+                                    <p class="text-sm text-medical-success mt-1">
+                                        <i class="fas fa-arrow-up"></i> +8% vs hier
+                                    </p>
+                                </div>
+                                <div class="h-12 w-12 bg-green-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-euro-sign text-medical-success text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">RDV en attente</p>
+                                    <p class="text-3xl font-bold text-gray-900" data-bind="stats.pendingAppointments">12</p>
+                                    <p class="text-sm text-medical-warning mt-1">
+                                        <i class="fas fa-clock"></i> 3 retards
+                                    </p>
+                                </div>
+                                <div class="h-12 w-12 bg-orange-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-calendar-check text-medical-warning text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Stock critique</p>
+                                    <p class="text-3xl font-bold text-gray-900" data-bind="stats.criticalStock">5</p>
+                                    <p class="text-sm text-medical-danger mt-1">
+                                        <i class="fas fa-exclamation-triangle"></i> Réappro urgent
+                                    </p>
+                                </div>
+                                <div class="h-12 w-12 bg-red-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-pills text-medical-danger text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+
+                    <!-- Two Column Layout -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- File d'attente -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">File d'attente</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <!-- @MAP: waitingQueue.map(patient => ( -->
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-medical-secondary rounded-full flex items-center justify-center">
+                                                <span class="text-white font-medium text-sm" data-bind="patient.initials">MD</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900" data-bind="patient.name">Marie Dubois</p>
+                                                <p class="text-sm text-gray-500" data-bind="patient.appointment">RDV 14:30 - Consultation</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="px-2 py-1 bg-medical-warning text-white text-xs rounded-full" data-bind="patient.status">En attente</span>
+                                            <button class="text-medical-primary hover:text-blue-700" data-event="click:startConsultation">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-medical-secondary rounded-full flex items-center justify-center">
+                                                <span class="text-white font-medium text-sm">PL</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900">Pierre Leclerc</p>
+                                                <p class="text-sm text-gray-500">RDV 15:00 - Contrôle</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-full">En consultation</span>
+                                            <button class="text-medical-primary hover:text-blue-700">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-medical-secondary rounded-full flex items-center justify-center">
+                                                <span class="text-white font-medium text-sm">SB</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-medium text-gray-900">Sophie Bernard</p>
+                                                <p class="text-sm text-gray-500">RDV 15:30 - Échographie</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="px-2 py-1 bg-gray-500 text-white text-xs rounded-full">Programmé</span>
+                                            <button class="text-medical-primary hover:text-blue-700">
+                                                <i class="fas fa-calendar"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- @END_MAP )) -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agenda du jour -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Agenda du jour</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <!-- @MAP: todaySchedule.map(appointment => ( -->
+                                    <div class="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition duration-150">
+                                        <div class="text-sm font-medium text-gray-500 w-16" data-bind="appointment.time">09:00</div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-900" data-bind="appointment.patient">Jean Martin</p>
+                                            <p class="text-sm text-gray-500" data-bind="appointment.type">Consultation générale</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="px-2 py-1 bg-medical-success text-white text-xs rounded-full" data-bind="appointment.status">Terminé</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition duration-150">
+                                        <div class="text-sm font-medium text-gray-500 w-16">10:30</div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-900">Anne Dubois</p>
+                                            <p class="text-sm text-gray-500">Vaccination</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="px-2 py-1 bg-medical-success text-white text-xs rounded-full">Terminé</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
+                                        <div class="text-sm font-medium text-medical-primary w-16">14:30</div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-900">Marie Dubois</p>
+                                            <p class="text-sm text-gray-500">Consultation</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="px-2 py-1 bg-blue-500 text-white text-xs rounded-full">En cours</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition duration-150">
+                                        <div class="text-sm font-medium text-gray-500 w-16">15:00</div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-900">Pierre Leclerc</p>
+                                            <p class="text-sm text-gray-500">Contrôle</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="px-2 py-1 bg-gray-500 text-white text-xs rounded-full">Programmé</span>
+                                        </div>
+                                    </div>
+                                    <!-- @END_MAP )) -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Section -->
+                    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Stock Alerts -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Alertes Stock</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <!-- @MAP: stockAlerts.map(alert => ( -->
+                                    <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900" data-bind="alert.medication">Paracétamol 500mg</p>
+                                            <p class="text-sm text-gray-500" data-bind="alert.quantity">Stock: 12 unités</p>
+                                        </div>
+                                        <i class="fas fa-exclamation-triangle text-medical-danger"></i>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900">Amoxicilline 250mg</p>
+                                            <p class="text-sm text-gray-500">Expire dans 15 jours</p>
+                                        </div>
+                                        <i class="fas fa-clock text-medical-warning"></i>
+                                    </div>
+                                    <!-- @END_MAP )) -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Summary -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Résumé Financier</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">Recettes du jour</span>
+                                        <span class="font-semibold text-medical-success" data-bind="financial.dailyRevenue">€2,847</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">Dépenses du jour</span>
+                                        <span class="font-semibold text-medical-danger" data-bind="financial.dailyExpenses">€423</span>
+                                    </div>
+                                    <div class="border-t pt-4">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-900 font-medium">Bénéfice net</span>
+                                            <span class="font-bold text-medical-success" data-bind="financial.netProfit">€2,424</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Commission Summary -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Commissions à payer</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-3">
+                                    <!-- @MAP: pendingCommissions.map(commission => ( -->
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900" data-bind="commission.practitioner">Dr. Externe A</p>
+                                            <p class="text-sm text-gray-500" data-bind="commission.period">Janvier 2024</p>
+                                        </div>
+                                        <span class="font-semibold text-medical-primary" data-bind="commission.amount">€850</span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium text-gray-900">Dr. Externe B</p>
+                                            <p class="text-sm text-gray-500">Janvier 2024</p>
+                                        </div>
+                                        <span class="font-semibold text-medical-primary">€650</span>
+                                    </div>
+                                    <!-- @END_MAP )) -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: DashboardContent -->
+
+                <!-- @COMPONENT: PatientManagement [hidden by default] -->
+                <div id="patientContent" class="content-section hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <!-- Header with search and new patient button -->
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-900">Gestion des Patients</h3>
+                                <button class="bg-medical-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-150" data-event="click:createNewPatient">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Nouveau Patient
+                                </button>
+                            </div>
+                            <div class="mt-4 flex items-center space-x-4">
+                                <div class="flex-1 relative">
+                                    <input type="text" placeholder="Rechercher par nom, numéro dossier..." 
+                                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent"
+                                           data-bind="search.query">
+                                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                </div>
+                                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="filter.status">
+                                    <option>Tous les statuts</option>
+                                    <option>Actif</option>
+                                    <option>Inactif</option>
+                                    <option>Décédé</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Patient List -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° Dossier</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assurance</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière visite</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <!-- @MAP: patients.map(patient => ( -->
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 bg-medical-secondary rounded-full flex items-center justify-center">
+                                                    <span class="text-white font-medium text-sm" data-bind="patient.initials">MD</span>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900" data-bind="patient.fullName">Marie Dubois</div>
+                                                    <div class="text-sm text-gray-500" data-bind="patient.birthDate">né(e) le 15/03/1985</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="patient.fileNumber">P-2024-001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" data-bind="patient.insurance">CNSS Primaire</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" data-bind="patient.lastVisit">10/01/2024</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800" data-bind="patient.status">Actif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex space-x-2">
+                                                <button class="text-medical-primary hover:text-blue-700" data-event="click:viewPatient">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="text-gray-400 hover:text-gray-600" data-event="click:editPatient">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-medical-success hover:text-green-700" data-event="click:scheduleAppointment">
+                                                    <i class="fas fa-calendar-plus"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 bg-medical-secondary rounded-full flex items-center justify-center">
+                                                    <span class="text-white font-medium text-sm">PL</span>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Pierre Leclerc</div>
+                                                    <div class="text-sm text-gray-500">né(e) le 22/08/1978</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">P-2024-002</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CIMR + Mutuelle</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">08/01/2024</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Actif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex space-x-2">
+                                                <button class="text-medical-primary hover:text-blue-700">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="text-gray-400 hover:text-gray-600">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-medical-success hover:text-green-700">
+                                                    <i class="fas fa-calendar-plus"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- @END_MAP )) -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="px-6 py-4 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-700">
+                                    Affichage de <span class="font-medium">1</span> à <span class="font-medium">10</span> sur <span class="font-medium">247</span> patients
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50" data-event="click:previousPage">
+                                        Précédent
+                                    </button>
+                                    <button class="px-3 py-2 text-sm text-white bg-medical-primary border border-medical-primary rounded-md">1</button>
+                                    <button class="px-3 py-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">2</button>
+                                    <button class="px-3 py-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">3</button>
+                                    <button class="px-3 py-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50" data-event="click:nextPage">
+                                        Suivant
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: PatientManagement -->
+
+                <!-- @COMPONENT: ConsultationInterface [hidden by default] -->
+                <div id="consultationContent" class="content-section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Patient Info Panel -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Patient</h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="text-center mb-4">
+                                        <div class="h-20 w-20 bg-medical-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <span class="text-white font-bold text-xl" data-bind="patient.initials">MD</span>
+                                        </div>
+                                        <h4 class="text-xl font-semibold text-gray-900" data-bind="patient.fullName">Marie Dubois</h4>
+                                        <p class="text-gray-500" data-bind="patient.details">39 ans • Femme</p>
+                                        <p class="text-sm text-gray-400" data-bind="patient.fileNumber">Dossier: P-2024-001</p>
+                                    </div>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Assurance:</span>
+                                            <span class="font-medium" data-bind="patient.insurance">CNSS Primaire</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Groupe sanguin:</span>
+                                            <span class="font-medium" data-bind="patient.bloodType">O+</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Dernière visite:</span>
+                                            <span class="font-medium" data-bind="patient.lastVisit">10/01/2024</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Allergies Alert -->
+                                    <div class="mt-4 p-3 bg-red-50 rounded-lg">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-exclamation-triangle text-medical-danger mr-2"></i>
+                                            <span class="text-sm font-medium text-medical-danger">Allergies:</span>
+                                        </div>
+                                        <p class="text-sm text-gray-700 mt-1" data-bind="patient.allergies">Pénicilline, Fruits à coque</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Actions Rapides</h3>
+                                </div>
+                                <div class="p-6 space-y-3">
+                                    <button class="w-full flex items-center justify-center px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700 transition duration-150" data-event="click:showPrescriptionModal">
+                                        <i class="fas fa-prescription mr-2"></i>
+                                        Nouvelle Ordonnance
+                                    </button>
+                                    <button class="w-full flex items-center justify-center px-4 py-2 bg-medical-success text-white rounded-lg hover:bg-green-700 transition duration-150" data-event="click:requestExam">
+                                        <i class="fas fa-vial mr-2"></i>
+                                        Demander Examen
+                                    </button>
+                                    <button class="w-full flex items-center justify-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-150" data-event="click:scheduleFollowUp">
+                                        <i class="fas fa-calendar-plus mr-2"></i>
+                                        RDV de Suivi
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Consultation Form -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Consultation - 15/01/2024 14:30</h3>
+                                </div>
+                                <div class="p-6">
+                                    <form class="space-y-6" data-implementation="Connect to consultation API">
+                                        <!-- Motif de consultation -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Motif de consultation</label>
+                                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent" 
+                                                   placeholder="Ex: Douleurs abdominales, fièvre..." data-bind="consultation.reason">
+                                        </div>
+
+                                        <!-- Anamnèse -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Anamnèse</label>
+                                            <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent" 
+                                                      placeholder="Histoire de la maladie actuelle, antécédents pertinents..." data-bind="consultation.anamnesis"></textarea>
+                                        </div>
+
+                                        <!-- Examen clinique -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Examen clinique</label>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label class="block text-xs text-gray-500 mb-1">Tension artérielle</label>
+                                                    <input type="text" placeholder="120/80 mmHg" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="vitals.bloodPressure">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-500 mb-1">Fréquence cardiaque</label>
+                                                    <input type="text" placeholder="72 bpm" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="vitals.heartRate">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-500 mb-1">Température</label>
+                                                    <input type="text" placeholder="37.0°C" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="vitals.temperature">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs text-gray-500 mb-1">Poids</label>
+                                                    <input type="text" placeholder="70 kg" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="vitals.weight">
+                                                </div>
+                                            </div>
+                                            <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent" 
+                                                      placeholder="Observations cliniques détaillées..." data-bind="consultation.clinicalExam"></textarea>
+                                        </div>
+
+                                        <!-- Diagnostic -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Diagnostic</label>
+                                            <div class="space-y-3">
+                                                <div class="flex items-center space-x-2">
+                                                    <select class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="consultation.diagnosisCode">
+                                                        <option>Sélectionner un code CIM-10 (optionnel)</option>
+                                                        <option value="K59.1">K59.1 - Diarrhée fonctionnelle</option>
+                                                        <option value="R50.9">R50.9 - Fièvre non spécifiée</option>
+                                                        <option value="Z00.0">Z00.0 - Examen médical général</option>
+                                                    </select>
+                                                    <button type="button" class="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200" data-event="click:searchDiagnosis">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                                <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent" 
+                                                          placeholder="Description du diagnostic..." data-bind="consultation.diagnosisDescription"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <!-- Recommandations -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Recommandations</label>
+                                            <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent" 
+                                                      placeholder="Conseils, repos, régime alimentaire..." data-bind="consultation.recommendations"></textarea>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                                            <button type="button" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-150" data-event="click:saveDraft">
+                                                Sauvegarder Brouillon
+                                            </button>
+                                            <button type="submit" class="px-6 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700 transition duration-150" data-event="click:saveConsultation">
+                                                Terminer Consultation
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: ConsultationInterface -->
+
+                <!-- @COMPONENT: PharmacyManagement [hidden by default] -->
+                <div id="pharmacieContent" class="content-section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <!-- Search and Filters -->
+                        <div class="lg:col-span-4">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    <div class="md:col-span-2">
+                                        <div class="relative">
+                                            <input type="text" placeholder="Rechercher médicament, ordonnance..." 
+                                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent"
+                                                   data-bind="pharmacy.searchQuery">
+                                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="pharmacy.filter.category">
+                                        <option>Toutes catégories</option>
+                                        <option>Antibiotiques</option>
+                                        <option>Antalgiques</option>
+                                        <option>Vitamines</option>
+                                        <option>Cardiovasculaire</option>
+                                    </select>
+                                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="pharmacy.filter.stock">
+                                        <option>Tous les stocks</option>
+                                        <option>Stock faible</option>
+                                        <option>Bientôt périmé</option>
+                                        <option>En rupture</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stock Overview Cards -->
+                        <div class="lg:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600">Total Médicaments</p>
+                                        <p class="text-3xl font-bold text-gray-900" data-bind="pharmacy.stats.totalMedications">847</p>
+                                    </div>
+                                    <div class="h-12 w-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-pills text-medical-primary text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600">Stock Faible</p>
+                                        <p class="text-3xl font-bold text-medical-warning" data-bind="pharmacy.stats.lowStock">12</p>
+                                    </div>
+                                    <div class="h-12 w-12 bg-yellow-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-exclamation-triangle text-medical-warning text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600">Bientôt Périmés</p>
+                                        <p class="text-3xl font-bold text-medical-danger" data-bind="pharmacy.stats.expiringSoon">5</p>
+                                    </div>
+                                    <div class="h-12 w-12 bg-red-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-clock text-medical-danger text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600">Valeur Stock</p>
+                                        <p class="text-3xl font-bold text-medical-success" data-bind="pharmacy.stats.stockValue">€45,230</p>
+                                    </div>
+                                    <div class="h-12 w-12 bg-green-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-euro-sign text-medical-success text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Pharmacy Content -->
+                        <div class="lg:col-span-3">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-gray-900">Inventaire Médicaments</h3>
+                                        <div class="flex space-x-2">
+                                            <button class="px-4 py-2 bg-medical-success text-white rounded-lg hover:bg-green-700 transition duration-150" data-event="click:addMedication">
+                                                <i class="fas fa-plus mr-2"></i>
+                                                Ajouter Stock
+                                            </button>
+                                            <button class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-150" data-event="click:exportInventory">
+                                                <i class="fas fa-download mr-2"></i>
+                                                Export
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Médicament</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Péremption</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <!-- @MAP: medicationInventory.map(medication => ( -->
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div>
+                                                        <div class="text-sm font-medium text-gray-900" data-bind="medication.name">Paracétamol 500mg</div>
+                                                        <div class="text-sm text-gray-500" data-bind="medication.form">Comprimés - Boîte de 20</div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900" data-bind="medication.stock">47 unités</div>
+                                                    <div class="text-sm text-gray-500">Seuil: 20</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900" data-bind="medication.expiryDate">15/12/2024</div>
+                                                    <div class="text-sm text-medical-warning">Dans 11 mois</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900" data-bind="medication.salePrice">€3.50</div>
+                                                    <div class="text-sm text-gray-500" data-bind="medication.purchasePrice">PA: €2.20</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800" data-bind="medication.status">Disponible</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-medical-primary hover:text-blue-700" data-event="click:dispenseMedication">
+                                                            <i class="fas fa-hand-holding-medical"></i>
+                                                        </button>
+                                                        <button class="text-gray-400 hover:text-gray-600" data-event="click:editMedication">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="text-medical-success hover:text-green-700" data-event="click:addStock">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div>
+                                                        <div class="text-sm font-medium text-gray-900">Amoxicilline 250mg</div>
+                                                        <div class="text-sm text-gray-500">Gélules - Boîte de 12</div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-medical-danger font-medium">8 unités</div>
+                                                    <div class="text-sm text-gray-500">Seuil: 15</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">22/02/2024</div>
+                                                    <div class="text-sm text-medical-danger">Dans 1 mois</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">€8.90</div>
+                                                    <div class="text-sm text-gray-500">PA: €5.50</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Stock Faible</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-medical-primary hover:text-blue-700">
+                                                            <i class="fas fa-hand-holding-medical"></i>
+                                                        </button>
+                                                        <button class="text-gray-400 hover:text-gray-600">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="text-medical-success hover:text-green-700">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <!-- @END_MAP )) -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pharmacy Sidebar -->
+                        <div class="lg:col-span-1">
+                            <!-- Pending Prescriptions -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Ordonnances en Attente</h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="space-y-4">
+                                        <!-- @MAP: pendingPrescriptions.map(prescription => ( -->
+                                        <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-sm font-medium text-gray-900" data-bind="prescription.patient">Marie Dubois</span>
+                                                <span class="text-xs text-gray-500" data-bind="prescription.time">14:45</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mb-2" data-bind="prescription.doctor">Dr. Jean Martin</p>
+                                            <div class="text-xs text-gray-500">
+                                                <span data-bind="prescription.itemCount">3</span> médicaments prescrits
+                                            </div>
+                                            <button class="mt-2 w-full px-3 py-1 bg-medical-primary text-white text-sm rounded hover:bg-blue-700 transition duration-150" data-event="click:processPrescription">
+                                                Traiter
+                                            </button>
+                                        </div>
+
+                                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-sm font-medium text-gray-900">Pierre Leclerc</span>
+                                                <span class="text-xs text-gray-500">15:12</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mb-2">Dr. Sophie Blanc</p>
+                                            <div class="text-xs text-gray-500">
+                                                2 médicaments prescrits
+                                            </div>
+                                            <button class="mt-2 w-full px-3 py-1 bg-medical-primary text-white text-sm rounded hover:bg-blue-700 transition duration-150">
+                                                Traiter
+                                            </button>
+                                        </div>
+                                        <!-- @END_MAP )) -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Stock Alerts -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Alertes Stock</h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="space-y-3">
+                                        <!-- @MAP: stockAlerts.map(alert => ( -->
+                                        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900" data-bind="alert.medication">Aspirine 500mg</p>
+                                                <p class="text-xs text-gray-500" data-bind="alert.stock">Stock: 3 unités</p>
+                                            </div>
+                                            <i class="fas fa-exclamation-triangle text-medical-danger"></i>
+                                        </div>
+
+                                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Ibuprofène 200mg</p>
+                                                <p class="text-xs text-gray-500">Expire: 15/03/2024</p>
+                                            </div>
+                                            <i class="fas fa-clock text-medical-warning"></i>
+                                        </div>
+                                        <!-- @END_MAP )) -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: PharmacyManagement -->
+
+                <!-- @COMPONENT: CashierInterface [hidden by default] -->
+                <div id="caisseContent" class="content-section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Cash Register Operations -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-gray-900">Caisse Principale</h3>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Ouverte</span>
+                                            <span class="text-sm text-gray-500" data-bind="cashRegister.openTime">Ouverte: 08:00</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                            <p class="text-sm text-gray-600">Solde d'ouverture</p>
+                                            <p class="text-2xl font-bold text-medical-primary" data-bind="cashRegister.openingBalance">€500.00</p>
+                                        </div>
+                                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                                            <p class="text-sm text-gray-600">Recettes du jour</p>
+                                            <p class="text-2xl font-bold text-medical-success" data-bind="cashRegister.dailyRevenue">€2,847.50</p>
+                                        </div>
+                                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                            <p class="text-sm text-gray-600">Solde actuel</p>
+                                            <p class="text-2xl font-bold text-gray-900" data-bind="cashRegister.currentBalance">€3,347.50</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Processing Form -->
+                                <div class="p-6">
+                                    <h4 class="text-lg font-medium text-gray-900 mb-4">Nouveau Paiement</h4>
+                                    <form class="space-y-4" data-implementation="Connect to payment processing API">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Patient</label>
+                                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="payment.patient">
+                                                    <option>Sélectionner un patient</option>
+                                                    <option value="1">Marie Dubois</option>
+                                                    <option value="2">Pierre Leclerc</option>
+                                                    <option value="3">Sophie Bernard</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Facture</label>
+                                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="payment.invoice">
+                                                    <option>Sélectionner une facture</option>
+                                                    <option value="F-2024-001">F-2024-001 - €75.00</option>
+                                                    <option value="F-2024-002">F-2024-002 - €120.50</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Montant</label>
+                                                <input type="number" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" 
+                                                       placeholder="0.00" data-bind="payment.amount">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Mode de paiement</label>
+                                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="payment.method">
+                                                    <option value="cash">Espèces</option>
+                                                    <option value="card">Carte bancaire</option>
+                                                    <option value="check">Chèque</option>
+                                                    <option value="transfer">Virement</option>
+                                                    <option value="mobile">Mobile Money</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                                            <textarea rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" 
+                                                      placeholder="Notes optionnelles..." data-bind="payment.notes"></textarea>
+                                        </div>
+
+                                        <div class="flex justify-end space-x-4">
+                                            <button type="button" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-150" data-event="click:clearForm">
+                                                Annuler
+                                            </button>
+                                            <button type="submit" class="px-6 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700 transition duration-150" data-event="click:processPayment">
+                                                Enregistrer Paiement
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Today's Transactions -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Transactions du Jour</h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mode</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <!-- @MAP: todayTransactions.map(transaction => ( -->
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="transaction.time">14:30</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="transaction.patient">Marie Dubois</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800" data-bind="transaction.method">Carte</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-medical-success" data-bind="transaction.amount">€75.00</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-medical-primary hover:text-blue-700" data-event="click:printReceipt">
+                                                            <i class="fas fa-print"></i>
+                                                        </button>
+                                                        <button class="text-gray-400 hover:text-gray-600" data-event="click:viewTransaction">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">13:45</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Pierre Leclerc</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Espèces</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-medical-success">€120.50</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-medical-primary hover:text-blue-700">
+                                                            <i class="fas fa-print"></i>
+                                                        </button>
+                                                        <button class="text-gray-400 hover:text-gray-600">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <!-- @END_MAP )) -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cash Register Sidebar -->
+                        <div class="lg:col-span-1">
+                            <!-- Payment Methods Summary -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Répartition Paiements</h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="space-y-4">
+                                        <!-- @MAP: paymentMethodsSummary.map(method => ( -->
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="fas fa-money-bill-wave text-medical-success"></i>
+                                                <span class="text-sm text-gray-600" data-bind="method.name">Espèces</span>
+                                            </div>
+                                            <span class="font-medium text-gray-900" data-bind="method.amount">€1,234.50</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="fas fa-credit-card text-medical-primary"></i>
+                                                <span class="text-sm text-gray-600">Carte bancaire</span>
+                                            </div>
+                                            <span class="font-medium text-gray-900">€987.00</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="fas fa-money-check text-gray-600"></i>
+                                                <span class="text-sm text-gray-600">Chèque</span>
+                                            </div>
+                                            <span class="font-medium text-gray-900">€345.00</span>
+                                        </div>
+
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="fas fa-mobile-alt text-green-600"></i>
+                                                <span class="text-sm text-gray-600">Mobile Money</span>
+                                            </div>
+                                            <span class="font-medium text-gray-900">€281.00</span>
+                                        </div>
+                                        <!-- @END_MAP )) -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pending Payments -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Factures Impayées</h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="space-y-3">
+                                        <!-- @MAP: unpaidInvoices.map(invoice => ( -->
+                                        <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm font-medium text-gray-900" data-bind="invoice.patient">Sophie Bernard</span>
+                                                <span class="text-sm font-bold text-medical-warning" data-bind="invoice.amount">€95.00</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500" data-bind="invoice.number">Facture: F-2024-003</p>
+                                            <p class="text-xs text-gray-500" data-bind="invoice.date">Date: 10/01/2024</p>
+                                            <button class="mt-2 w-full px-3 py-1 bg-medical-primary text-white text-sm rounded hover:bg-blue-700 transition duration-150" data-event="click:processPayment">
+                                                Encaisser
+                                            </button>
+                                        </div>
+
+                                        <div class="p-3 bg-red-50 rounded-lg border border-red-200">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm font-medium text-gray-900">Jean Martin</span>
+                                                <span class="text-sm font-bold text-medical-danger">€165.50</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500">Facture: F-2024-001</p>
+                                            <p class="text-xs text-gray-500">Date: 05/01/2024 (En retard)</p>
+                                            <button class="mt-2 w-full px-3 py-1 bg-medical-danger text-white text-sm rounded hover:bg-red-700 transition duration-150">
+                                                Relancer
+                                            </button>
+                                        </div>
+                                        <!-- @END_MAP )) -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cash Register Actions -->
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Actions Caisse</h3>
+                                </div>
+                                <div class="p-6 space-y-3">
+                                    <button class="w-full flex items-center justify-center px-4 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700 transition duration-150" data-event="click:printCashReport">
+                                        <i class="fas fa-print mr-2"></i>
+                                        Journal de Caisse
+                                    </button>
+                                    <button class="w-full flex items-center justify-center px-4 py-2 bg-medical-success text-white rounded-lg hover:bg-green-700 transition duration-150" data-event="click:addExpense">
+                                        <i class="fas fa-minus mr-2"></i>
+                                        Enregistrer Dépense
+                                    </button>
+                                    <button class="w-full flex items-center justify-center px-4 py-2 bg-medical-warning text-white rounded-lg hover:bg-yellow-600 transition duration-150" data-event="click:cashCount">
+                                        <i class="fas fa-calculator mr-2"></i>
+                                        Comptage Caisse
+                                    </button>
+                                    <button class="w-full flex items-center justify-center px-4 py-2 bg-medical-danger text-white rounded-lg hover:bg-red-700 transition duration-150" data-event="click:closeCashRegister">
+                                        <i class="fas fa-lock mr-2"></i>
+                                        Fermer Caisse
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: CashierInterface -->
+
+                <!-- @COMPONENT: ReportsInterface [hidden by default] -->
+                <div id="rapportsContent" class="content-section hidden">
+                    <div class="space-y-6">
+                        <!-- Report Selection Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition duration-150 cursor-pointer" data-event="click:generateFinancialReport">
+                                <div class="flex items-center space-x-4">
+                                    <div class="h-12 w-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-medical-primary text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Rapports Financiers</h3>
+                                        <p class="text-sm text-gray-600">Recettes, dépenses, bénéfices</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition duration-150 cursor-pointer" data-event="click:generatePatientReport">
+                                <div class="flex items-center space-x-4">
+                                    <div class="h-12 w-12 bg-green-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-users text-medical-success text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Rapports Patients</h3>
+                                        <p class="text-sm text-gray-600">Géographie, démographie, activité</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition duration-150 cursor-pointer" data-event="click:generatePharmacyReport">
+                                <div class="flex items-center space-x-4">
+                                    <div class="h-12 w-12 bg-purple-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-pills text-purple-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Rapports Pharmacie</h3>
+                                        <p class="text-sm text-gray-600">Stock, péremptions, consommation</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition duration-150 cursor-pointer" data-event="click:generateCommissionReport">
+                                <div class="flex items-center space-x-4">
+                                    <div class="h-12 w-12 bg-orange-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-percent text-medical-warning text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Rapports Commissions</h3>
+                                        <p class="text-sm text-gray-600">Intervenants externes, paiements</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition duration-150 cursor-pointer" data-event="click:generateInsuranceReport">
+                                <div class="flex items-center space-x-4">
+                                    <div class="h-12 w-12 bg-indigo-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-shield-alt text-indigo-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Rapports Assurances</h3>
+                                        <p class="text-sm text-gray-600">Remboursements, fiches assurance</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition duration-150 cursor-pointer" data-event="click:generateCustomReport">
+                                <div class="flex items-center space-x-4">
+                                    <div class="h-12 w-12 bg-gray-50 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-cog text-gray-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">Rapport Personnalisé</h3>
+                                        <p class="text-sm text-gray-600">Configurez vos propres critères</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Report Generation Form -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Génération de Rapport</h3>
+                            </div>
+                            <div class="p-6">
+                                <form class="space-y-6" data-implementation="Connect to report generation API">
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Type de rapport</label>
+                                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="report.type">
+                                                <option>Journal des recettes</option>
+                                                <option>Journal de caisse</option>
+                                                <option>Répartition géographique</option>
+                                                <option>Commissions intervenants</option>
+                                                <option>Valorisation stock</option>
+                                                <option>Péremptions</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Date de début</label>
+                                            <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="report.startDate">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Date de fin</label>
+                                            <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="report.endDate">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Format</label>
+                                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary" data-bind="report.format">
+                                                <option value="pdf">PDF</option>
+                                                <option value="excel">Excel</option>
+                                                <option value="csv">CSV</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-end space-x-4">
+                                        <button type="button" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-150" data-event="click:previewReport">
+                                            Aperçu
+                                        </button>
+                                        <button type="submit" class="px-6 py-2 bg-medical-primary text-white rounded-lg hover:bg-blue-700 transition duration-150" data-event="click:generateReport">
+                                            Générer Rapport
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Recent Reports -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">Rapports Récents</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rapport</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Période</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Généré le</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <!-- @MAP: recentReports.map(report => ( -->
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900" data-bind="report.name">Journal des recettes par utilisateur</div>
+                                                <div class="text-sm text-gray-500" data-bind="report.description">Détail des paiements par caissier</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="report.period">01/01/2024 - 15/01/2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="report.generatedDate">15/01/2024 16:30</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800" data-bind="report.status">Prêt</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-medical-primary hover:text-blue-700" data-event="click:downloadReport">
+                                                        <i class="fas fa-download"></i>
+                                                    </button>
+                                                    <button class="text-gray-400 hover:text-gray-600" data-event="click:viewReport">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="text-medical-success hover:text-green-700" data-event="click:emailReport">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">Répartition géographique patients</div>
+                                                <div class="text-sm text-gray-500">Analyse par commune et région</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Janvier 2024</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">14/01/2024 09:15</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En cours</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-gray-300 cursor-not-allowed">
+                                                        <i class="fas fa-download"></i>
+                                                    </button>
+                                                    <button class="text-gray-400 hover:text-gray-600">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="text-gray-300 cursor-not-allowed">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- @END_MAP )) -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Chart Dashboard Preview -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Évolution des Recettes</h3>
+                                </div>
+                                <div class="p-6">
+                                    <!-- @FUNCTIONALITY: This chart should implement revenue trends using Chart.js or similar -->
+                                    <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                                        <div class="text-center">
+                                            <i class="fas fa-chart-line text-4xl text-gray-400 mb-2"></i>
+                                            <p class="text-gray-500">Graphique des recettes</p>
+                                            <p class="text-sm text-gray-400">Données des 12 derniers mois</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-900">Top Prestations</h3>
+                                </div>
+                                <div class="p-6">
+                                    <!-- @FUNCTIONALITY: This chart should implement service distribution using Chart.js or similar -->
+                                    <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                                        <div class="text-center">
+                                            <i class="fas fa-chart-pie text-4xl text-gray-400 mb-2"></i>
+                                            <p class="text-gray-500">Répartition des prestations</p>
+                                            <p class="text-sm text-gray-400">Par volume et CA</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: ReportsInterface -->
+            </main>
+        </div>
+        <!-- @END_COMPONENT: MainContent -->
+    </div>
+    <!-- @END_COMPONENT: MainApplication -->
+
+    <script>
+        (function() {
+            // TODO: Implement business logic, API calls, or state management
+            
+            // Initialize application state
+            let currentUser = null;
+            let currentPage = 'dashboard';
+            
+            // Login functionality
+            function handleLogin(event) {
+                event.preventDefault();
+                // TODO: Implement actual authentication with Flask backend
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                console.log('Login attempted');
+            }
+
+            // Navigation functionality
+            function switchContent(contentId) {
+                // Hide all content sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                
+                // Show selected content
+                const targetContent = document.getElementById(contentId);
+                if (targetContent) {
+                    targetContent.classList.remove('hidden');
+                }
+                
+                // Update navigation active state
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.classList.remove('text-medical-primary', 'bg-blue-50', 'border-r-2', 'border-medical-primary');
+                    link.classList.add('text-gray-600');
+                });
+                
+                const activeLink = document.querySelector(`[data-menu="${contentId.replace('Content', '')}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('text-medical-primary', 'bg-blue-50', 'border-r-2', 'border-medical-primary');
+                    activeLink.classList.remove('text-gray-600');
+                }
+            }
+
+            // Event listeners
+            document.addEventListener('DOMContentLoaded', function() {
+                // Login form submission
+                const loginForm = document.querySelector('#loginScreen form');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', handleLogin);
+                }
+
+                // Navigation menu items
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const menuItem = this.getAttribute('data-menu');
+                        if (menuItem) {
+                            switchContent(menuItem + 'Content');
+                            // Update page title
+                            const pageTitle = document.querySelector('header h1');
+                            if (pageTitle) {
+                                pageTitle.textContent = this.textContent.trim();
+                            }
+                        }
+                    });
+                });
+
+                // Quick action buttons
+                document.querySelectorAll('[data-event]').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const action = this.getAttribute('data-event').split(':')[1];
+                        console.log(`Action triggered: ${action}`);
+                        // TODO: Implement specific action handlers
+                    });
+                });
+
+                // Form submissions
+                document.querySelectorAll('form[data-implementation]').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        console.log('Form submitted:', this.getAttribute('data-implementation'));
+                        // TODO: Implement form submission logic
+                    });
+                });
+            });
+
+            // Additional utility functions
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('fr-FR', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(amount);
+            }
+
+            function formatDate(date) {
+                return new Intl.DateTimeFormat('fr-FR').format(new Date(date));
+            }
+
+            // Export functions for global access if needed
+            window.clinicApp = {
+                switchContent,
+                formatCurrency,
+                formatDate
+            };
+        })();
+    </script>
+</body>
+</html>

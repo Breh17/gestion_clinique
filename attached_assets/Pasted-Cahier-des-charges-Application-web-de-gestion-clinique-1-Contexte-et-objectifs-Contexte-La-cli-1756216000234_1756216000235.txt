@@ -1,0 +1,226 @@
+Cahier des charges – Application web de gestion clinique
+1) Contexte et objectifs
+Contexte. La clinique souhaite une application web unifiée pour gérer le
+parcours patient, la facturation (actes/prestations, pharmacie), les assurances, la
+caisse, le stock-médicaments (achats, entrées/sorties, péremptions), les
+intervenants externes (commissions), les dépenses, la génération d’ordonnancier
+et les reportings (journal des recettes, journal de caisse, répartition géographique
+des patients, etc.).
+Objectifs.
+• Digitaliser l’accueil, le dossier patient, les rendez-vous, la consultation,
+l’examen, la pharmacie et l’encaissement.
+• Appliquer automatiquement les règles d’assurance (tarifs, taux de prise en
+charge, plafonds, copaiements).
+• Assurer un suivi de stock précis (entrées/sorties, ordonnances,
+péremptions, valorisation).
+• Piloter l’activité via des états fiables (recettes par utilisateur, caisse,
+dettes/crédits, gratuits, géographie patient, commissions).
+• Sécuriser les accès par rôle et tracer toutes les opérations.
+2) Périmètre fonctionnel
+2.1 Rôles et niveaux d’accès
+• Superviseur : vision globale, paramétrage avancé, validation, audits, états
+consolidés, export comptable.
+• Administrateur (IT) : gestion des utilisateurs/permissions, référentiels,
+sauvegardes, intégrations, SLA.
+• Secrétaire / Accueil : création patient, gestion dossiers/attentes, RDV,
+édition documents administratifs.
+• Médecin : consultation, diagnostic, prescription (ordonnance), demandes
+d’examens, planification RDV, validation résultats.
+• Intervenant externe (échographiste, radiologue, spécialiste, etc.) :
+prestations réalisées, saisie/validation compte rendu, visibilité sur ses
+actes et commissions.
+• Pharmacien : réception achats fournisseurs, gestion stock, délivrance sur
+ordonnance, substitution, suivi péremptions, ordonnancier.
+• Caissier : facturation, encaissements, gestion crédits, échéanciers
+(paiement en tranches), remises, justificatifs.
+• Comptable : rapprochements, états financiers, exports, suivi
+dettes/avoirs.
+Les permissions seront granulares (CRUD par module + actions sensibles :
+annulation facture, retour stock, déverrouillage, clôture de caisse, etc.).
+2.2 Gestion du patient & parcours
+• Fiche Patient : identité, contacts, adresse (géocodage
+quartier/commune/région/pays), N° dossier, photo, antécédents, allergies,
+groupe sanguin, personne à prévenir, statut assurance(s).
+• Parcours & file d’attente : motifs, service, priorités, statut (en attente, en
+consultation, en pharmacie, en caisse, clôturé).
+• Rendez-vous : agenda par ressource (médecin/salle/appareil), rappels
+(SMS/e-mail), replanification, historique.
+• Consultation : anamnèse, examen clinique, diagnostics (CIM-10
+optionnel), actes à réaliser, ordonnance (médicaments avec posologie),
+recommandations, prochains RDV.
+• Examens & résultats : demande d’examen (ex: Échographie, BIO,
+RADIO, ALSO), workflow de réalisation, validation médicale, mise à
+disposition du résultat (PDF), notification patiente.
+• Documents : impression/partage (attestation, compte rendu, ordonnance,
+devis, consentement).
+2.3 Assurances & tarifs
+• Référentiel Assurances : contrat, gracieux, taux de prise en charge par
+prestation/médicament, plafonds par acte/vis
+• +-ite/période, quote-part patient.
+• Affiliation Patient : mutuelle/assureur principal + complémentaires,
+validité, numéros.
+• Moteur de tarification : calcul automatique sur facture (prestations &
+pharmacie) : part assureur / part patient, contrôle plafonds, tickets
+modérateurs.
+• Dossier de remboursement : extraction des pièces (fiche assurance,
+factures, ordonnances, comptes rendus), génération « fiche assurance pour
+remboursement ».
+2.4 Prestations (actes) & facturation
+• Catalogue prestations : Consultation, Échographie, ALSO, actes
+paramédicaux, etc. (codes, durées, prix public, prix assurance, taxes,
+unité, service).
+• Facture : ajout d’actes et de produits, application automatique des
+barèmes d’assurance, remises autorisées, gratuités (motifs), crédits.
+• Paiement : espèces, carte, chèque, virement, mobile money, mixte,
+paiement en plusieurs tranches (échéancier), reçus.
+• Avoirs/Annulations : flux contrôlé (motif + autorisation + journal
+d’audit) avec impact en caisse & stock.
+2.5 Pharmacie & médicaments
+• Référentiel médicaments : DCI, forme, dosage, conditionnement, code
+barre, prix d’achat/vente, taxe, statut liste.
+• Ordonnances : posologie (dose, fréquence, durée),
+équivalences/substitutions, interactions (optionnel), historique.
+• Sorties : délivrance totale/partielle selon stock, traçabilité lot/date de
+péremption, impression « fiche de paiement médicament ».
+• Stock : multi-magasin (option), entrées (achats, retours), sorties (ventes,
+casses, régularisations), inventaires, péremptions (alertes),
+ordonnancier.
+• Achats fournisseurs : demandes de prix, commandes, réceptions (par
+lot), factures fournisseurs, retours, valorisation du stock (PA, PV,
+marge).
+2.6 Caisse & finances
+• Journaux : journal de caisse (ouverture/fermeture, soldes, écarts), journal
+des recettes par utilisateur, par mode de paiement.
+• Crédits / Échéanciers : plan de paiement, rappels, suivi des impayés.
+• Gratuits : paramétrage motifs, plafonds, circuit d’approbation, traçabilité.
+• Comptabilité : plan de compte (optionnel), exports (CSV/Excel),
+intégration avec logiciel comptable (API/CSV).
+2.7 Intervenants externes & commissions
+• Référentiel : spécialité, contrat, barèmes de commission
+(pourcentage/fixe), périodicité (acte, journée, mois).
+• Calcul automatique : à la validation des actes, génération des états de
+commission, statut (à payer/payé), reçus.
+2.8 Dépenses (charges)
+• Saisie des charges : catégorie, fournisseur, mode de paiement, pièce
+jointe.
+• Rapprochement : caisse vs dépenses, tableaux de bord de marge/chiffre
+d’affaires.
+2.9 États & statistiques
+• Production : journal des recettes par utilisateur (période, mode); journal
+de caisse (ouverture, mouvements, clôture); chiffre d’affaires par
+service/prestation; répartition géographique des patients (commune,
+région, pays) ; top diagnostics/prestations; consommation médicaments;
+péremptions à 30/60/90 jours; dettes/crédits; gratuits par motif;
+commissions intervenants; valorisation stock; activité RDV (taux de
+non-présentation).
+• Export : PDF, Excel/CSV. Planification d’envoi par e-mail (option).
+3) Règles de gestion clés
+1. Tarification assurance prioritaire sur prix publics si patient assuré.
+Application des plafonds et calcul de la part patient.
+2. Stock : chaque sortie pharmacie décrémente le lot le plus ancien (FIFO
+par date de péremption). Interdiction de délivrer lot périmé.
+3. Ordonnancier : une ligne par délivrance (patient, prescripteur, spécialité,
+lot, quantité, date), édition conforme réglementation locale.
+4. Crédit/Gratuité : nécessite motif + autorisation selon profil; impacte
+directement les états de caisse.
+5. Annulation/retour : réintègre stock (lot d’origine) et annule recettes
+selon journaux, avec piste d’audit.
+6. Commissions : calculées sur montant net facturé (configurable : brut / net
+après remise/assurance).
+7. Double validation résultats sensibles (option) : examinateur + médecin
+valideur.
+8. Paiement en tranches : la facture reste « partiellement payée » jusqu’au
+solde; blocages paramétrables (ex : seuils avant délivrance).
+4) Modèle de données (schéma logique – niveau macro)
+• Patient(id, identité, contact, adresse_geo, assurance_id, …)*
+• Assurance(id, nom, barèmes, plafonds, règles)
+• Affiliation(id, patient_id, assurance_id, n°adhérent, validité)
+• Prestation(id, code, libellé, prix_pub, prix_assu, service, taxes)
+• Acte(id, patient_id, prestation_id, médecin_id, intervenant_id?,
+statut, date)
+• Facture(id, patient_id, total_brut, part_assu, part_patient, statut,
+caisse_id)
+• Règlement(id, facture_id, mode, montant, échéance?)
+• Médicament(id, DCI, forme, dosage, prix_achat, prix_vente, taxe)
+• Lot(id, médicament_id, n°lot, date_péremption, qté_dispo,
+coût_unitaire)
+• Ordonnance(id, patient_id, médecin_id, date) &
+LigneOrdonnance(…, posologie, qté_prescrite)
+• SortiePharma(id, ordonnance_id?, patient_id, lot_id, qté, date)
+• Fournisseur(id, nom, contact), CommandeFournisseur &
+Réception(… lot …)
+• Caisse(id, utilisateur_id, date_ouverture, date_clôture, solde_init,
+solde_final) & MouvementCaisse(… mode, montant …)
+• Commission(id, intervenant_id, période, base_calc, taux, montant,
+statut)
+• Dépense(id, catégorie, fournisseur, montant, pièce_jointe, date, mode)
+• AuditLog(id, utilisateur, action, entité, avant/après, horodatage, ip)
+5) Exigences non fonctionnelles
+• Architecture : application web responsive (mobile/desktop), séparation
+front/back, API REST, impression PDF.
+• Sécurité : SSO (option), MFA (option), hashage mots de passe,
+chiffrement TLS, rôles/permissions, journal d’audit.
+• Confidentialité : conformité locale (données de santé), consentement,
+anonymisation pour statistiques.
+• Disponibilité : 99,5% cible; sauvegardes quotidiennes; PRA (RPO ≤
+24h, RTO ≤ 8h) ; journalisation.
+• Performance : <2 s pour 90% des pages en réseau local; recherche
+patient <1 s.
+• Traçabilité : numéros de séquence pour factures, ordonnances,
+ordonnancier, mouvements de stock.
+• Internationalisation : multidevise, taxe paramétrable, formats de date.
+• Intégrations : SMS/e-mail (rappels RDV, notifications), paiements (carte,
+mobile money), export comptable.
+6) Interfaces clés (écrans)
+1. Tableau de bord : file d’attente, RDV du jour, alertes péremption, caisses
+ouvertes, impayés.
+2. Patient : fiche + historique + documents.
+3. Agenda : par médecin/intervenant/salle.
+4. Consultation : anamnèse, diagnostics, prescriptions, demandes
+d’examens.
+5. Pharmacie : ordonnancier, délivrance, stock, réceptions, inventaires,
+péremptions.
+6. Facturation/Caisse : panier d’actes/produits, application assurance,
+paiement mixte/tranches, reçus.
+7. Assurances : barèmes, fiches de remboursement, dossiers envoyés.
+8. Dépenses : saisie, pièces jointes, états.
+9. États : recettes par utilisateur, journal de caisse, géographie patient,
+commissions, stock.
+7) Workflows (exemples)
+• RDV → Accueil → Consultation → Examens → Résultats →
+Facturation → Paiement(s) → Clôture.
+• Ordonnance → Pharmacie (vérif stock, lots/péremption) →
+Délivrance → Caisse → Ordonnancier.
+• Achat fournisseur → Réception (création lots) → Mise en stock →
+Inventaire → Péremptions.
+• Prestation externe → Validation → Calcul commission → État de
+paiement.
+8) Rapports/États – définitions détaillées
+• Journal des recettes par utilisateur : période, utilisateur, nombre
+d’opérations, total par mode de paiement, écarts.
+• Journal de caisse : par caisse et par jour (ouverture, mouvement, clôture,
+écart, commentaire).
+• Répartition géographique des patients : carte/tableau : par
+commune/région/pays, période, volume & CA.
+• Fiche assurance pour remboursement : regroupement par
+assureur/période des actes & délivrances couverts, avec pièces.
+• Péremptions : listes des lots à J+30/60/90, quantités & valeur.
+• Commissions intervenants : base de calcul, montant, statut, justificatifs.
+• Valorisation du stock : en PA et PV, marge théorique.
+9) Gabarits de documents à produire
+• Ordonnance médicale (avec posologie et identification prescripteur).
+• Fiche de prestation (récap actes du patient).
+• Fiche de paiement médicament (détails délivrance, lots, prix,
+assurance/part patient).
+• Fiche assurance (pour remboursement assureur).
+• Reçus & Factures (avec mentions légales, QR/Code-barres optionnel).
+10) Données de référence & paramétrages
+• Utilisateurs & rôles, services, spécialités, salles, appareils.
+• Prestations/tarifs, taxes, remises autorisées, plafonds.
+• Médicaments & catalogues, unités, alertes seuil/péremption.
+• Assurances, règles de prise en charge.
+• Modes de paiement, journaux de caisse, séquences.
+11) Critères d’acceptation (exemples)
+1. La création d’une facture « patient assuré » applique automatiquement la
+part assureur et le reste à charge.
+2. Une ordonnance délivrée génère obligatoirement des lignes
