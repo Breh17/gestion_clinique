@@ -23,15 +23,11 @@ export default function ConsultationPage() {
     queryKey: ["/api/appointments", new Date().toISOString().split('T')[0]],
   });
 
-  // Get patient details when selected
-  const { data: patient } = useQuery({
-    queryKey: ["/api/patients", selectedPatient?.id],
-    enabled: !!selectedPatient?.id,
-  });
+  // Don't fetch patient details separately since we already have them from selectedPatient
 
   // Get consultations for selected patient
   const { data: consultations = [] } = useQuery({
-    queryKey: ["/api/consultations", { patientId: selectedPatient?.id }],
+    queryKey: ["/api/consultations", selectedPatient?.id || "none"],
     enabled: !!selectedPatient?.id,
   });
 
@@ -65,11 +61,20 @@ export default function ConsultationPage() {
         status: "en_consultation"
       });
 
-      // Get patient details
-      const patientResponse = await apiRequest("GET", `/api/patients/${appointment.patientId}`);
+      // Get patient details - ensure patientId is a string  
+      const patientId = typeof appointment.patientId === 'string' ? appointment.patientId : appointment.patientId?.id || appointment.patientId;
+      if (typeof patientId !== 'string') {
+        throw new Error("Invalid patient ID in appointment");
+      }
+      const patientResponse = await apiRequest("GET", `/api/patients/${patientId}`);
       const patientData = await patientResponse.json();
       
-      setSelectedPatient(patientData);
+      // Ensure we have a valid patient object with string ID
+      if (patientData && typeof patientData.id === 'string') {
+        setSelectedPatient(patientData);
+      } else {
+        throw new Error("Invalid patient data received");
+      }
       setIsConsultationOpen(true);
       
       queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });

@@ -155,6 +155,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPatient(id: string): Promise<Patient | undefined> {
+    // Add validation to prevent [object Object] errors
+    if (typeof id !== 'string' || !id.trim()) {
+      console.error('Invalid patient ID provided:', id, typeof id);
+      throw new Error('Invalid patient ID');
+    }
+    
     const [patient] = await db.select().from(patients).where(eq(patients.id, id));
     return patient;
   }

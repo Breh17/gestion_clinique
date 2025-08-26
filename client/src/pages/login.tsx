@@ -12,7 +12,6 @@ export default function LoginPage() {
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
-    role: "",
   });
 
   const { login, isLoginPending, loginError } = useAuth();
@@ -21,9 +20,9 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!credentials.username || !credentials.password || !credentials.role) {
+    if (!credentials.username || !credentials.password) {
       toast({
-        title: "Erreur",
+        title: "Erreur", 
         description: "Veuillez remplir tous les champs",
         variant: "destructive",
       });
@@ -77,26 +76,7 @@ export default function LoginPage() {
                 />
               </div>
               
-              <div>
-                <Select
-                  value={credentials.role}
-                  onValueChange={(value) => setCredentials({ ...credentials, role: value })}
-                >
-                  <SelectTrigger 
-                    data-testid="select-role"
-                    className="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-primary focus:border-transparent"
-                  >
-                    <SelectValue placeholder="Sélectionner un rôle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ROLE_LABELS).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+
             </div>
 
             {loginError && (

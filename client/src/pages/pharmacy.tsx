@@ -101,7 +101,7 @@ export default function PharmacyPage() {
                 <SelectValue placeholder="Toutes catégories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes catégories</SelectItem>
+                <SelectItem value="all">Toutes catégories</SelectItem>
                 <SelectItem value="antibiotiques">Antibiotiques</SelectItem>
                 <SelectItem value="antalgiques">Antalgiques</SelectItem>
                 <SelectItem value="vitamines">Vitamines</SelectItem>
@@ -113,7 +113,7 @@ export default function PharmacyPage() {
                 <SelectValue placeholder="Tous les stocks" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les stocks</SelectItem>
+                <SelectItem value="all">Tous les stocks</SelectItem>
                 <SelectItem value="low">Stock faible</SelectItem>
                 <SelectItem value="expiring">Bientôt périmé</SelectItem>
                 <SelectItem value="out">En rupture</SelectItem>

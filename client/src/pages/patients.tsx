@@ -99,7 +99,7 @@ export default function PatientsPage() {
       patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       patient.fileNumber.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = !statusFilter || patient.status === statusFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || patient.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
@@ -182,7 +182,7 @@ export default function PatientsPage() {
                 <SelectValue placeholder="Tous les statuts" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les statuts</SelectItem>
+                <SelectItem value="all">Tous les statuts</SelectItem>
                 <SelectItem value="actif">Actif</SelectItem>
                 <SelectItem value="inactif">Inactif</SelectItem>
                 <SelectItem value="decede">Décédé</SelectItem>

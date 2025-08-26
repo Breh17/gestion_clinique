@@ -57,7 +57,7 @@ export default function BillingPage() {
       invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       invoice.patientId.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = !statusFilter || invoice.status === statusFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || invoice.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
@@ -165,7 +165,7 @@ export default function BillingPage() {
                 <SelectValue placeholder="Tous les statuts" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les statuts</SelectItem>
+                <SelectItem value="all">Tous les statuts</SelectItem>
                 <SelectItem value="brouillon">Brouillon</SelectItem>
                 <SelectItem value="validee">Validée</SelectItem>
                 <SelectItem value="payee">Payée</SelectItem>

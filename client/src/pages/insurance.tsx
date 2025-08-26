@@ -74,7 +74,7 @@ export default function InsurancePage() {
     const matchesSearch = !searchQuery || 
       insurance.name.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesType = !typeFilter || insurance.type === typeFilter;
+    const matchesType = !typeFilter || typeFilter === "all" || insurance.type === typeFilter;
     
     return matchesSearch && matchesType;
   });
@@ -146,7 +146,7 @@ export default function InsurancePage() {
                 <SelectValue placeholder="Tous les types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les types</SelectItem>
+                <SelectItem value="all">Tous les types</SelectItem>
                 <SelectItem value="principale">Principale</SelectItem>
                 <SelectItem value="complementaire">Complémentaire</SelectItem>
               </SelectContent>

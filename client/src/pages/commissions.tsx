@@ -52,9 +52,9 @@ export default function CommissionsPage() {
   });
 
   const filteredCommissions = commissions.filter((commission: Commission) => {
-    const matchesPeriod = !periodFilter || commission.period === periodFilter;
-    const matchesStatus = !statusFilter || commission.status === statusFilter;
-    const matchesPractitioner = !practitionerFilter || commission.practitionerId === practitionerFilter;
+    const matchesPeriod = !periodFilter || periodFilter === "all" || commission.period === periodFilter;
+    const matchesStatus = !statusFilter || statusFilter === "all" || commission.status === statusFilter;
+    const matchesPractitioner = !practitionerFilter || practitionerFilter === "all" || commission.practitionerId === practitionerFilter;
     
     return matchesPeriod && matchesStatus && matchesPractitioner;
   });
@@ -159,7 +159,7 @@ export default function CommissionsPage() {
                 <SelectValue placeholder="Toutes les périodes" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les périodes</SelectItem>
+                <SelectItem value="all">Toutes les périodes</SelectItem>
                 <SelectItem value="2024-01">Janvier 2024</SelectItem>
                 <SelectItem value="2024-02">Février 2024</SelectItem>
                 <SelectItem value="2024-03">Mars 2024</SelectItem>
@@ -171,7 +171,7 @@ export default function CommissionsPage() {
                 <SelectValue placeholder="Tous les statuts" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les statuts</SelectItem>
+                <SelectItem value="all">Tous les statuts</SelectItem>
                 <SelectItem value="a_payer">À payer</SelectItem>
                 <SelectItem value="payee">Payée</SelectItem>
               </SelectContent>
@@ -182,7 +182,7 @@ export default function CommissionsPage() {
                 <SelectValue placeholder="Tous les intervenants" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les intervenants</SelectItem>
+                <SelectItem value="all">Tous les intervenants</SelectItem>
                 {practitioners.map((practitioner) => (
                   <SelectItem key={practitioner.id} value={practitioner.id}>
                     Dr. {practitioner.firstName} {practitioner.lastName}

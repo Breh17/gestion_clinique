@@ -56,8 +56,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
+  // Middleware to check role-based access
+  const requireRole = (allowedRoles: string[]) => {
+    return (req: any, res: any, next: any) => {
+      const user = req.session?.user;
+      if (!user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      if (!allowedRoles.includes(user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      req.user = user;
+      next();
+    };
+  };
+
   // Patient routes
-  app.get("/api/patients", requireAuth, async (req, res) => {
+  app.get("/api/patients", requireRole(['superviseur', 'medecin', 'secretaire']), async (req, res) => {
     try {
       const { limit = 50, offset = 0, search } = req.query;
       
@@ -75,8 +90,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/patients/:id", requireAuth, async (req, res) => {
+  app.get("/api/patients/:id", requireRole(['superviseur', 'medecin', 'secretaire']), async (req, res) => {
     try {
+      console.log('Getting patient with ID:', req.params.id, 'Type:', typeof req.params.id);
       const patient = await storage.getPatient(req.params.id);
       if (!patient) {
         return res.status(404).json({ message: "Patient not found" });
@@ -88,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/patients", requireAuth, async (req, res) => {
+  app.post("/api/patients", requireRole(['superviseur', 'secretaire']), async (req, res) => {
     try {
       const validatedData = insertPatientSchema.parse(req.body);
       const patient = await storage.createPatient(validatedData);
@@ -158,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Consultation routes
-  app.get("/api/consultations", requireAuth, async (req, res) => {
+  app.get("/api/consultations", requireRole(['superviseur', 'medecin']), async (req, res) => {
     try {
       const { patientId } = req.query;
       const consultations = await storage.getConsultations(patientId as string);
@@ -169,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/consultations", requireAuth, async (req, res) => {
+  app.post("/api/consultations", requireRole(['superviseur', 'medecin']), async (req, res) => {
     try {
       const validatedData = insertConsultationSchema.parse({
         ...req.body,
@@ -187,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Medication routes
-  app.get("/api/medications", requireAuth, async (req, res) => {
+  app.get("/api/medications", requireRole(['superviseur', 'medecin', 'pharmacien']), async (req, res) => {
     try {
       const medications = await storage.getMedications();
       res.json(medications);

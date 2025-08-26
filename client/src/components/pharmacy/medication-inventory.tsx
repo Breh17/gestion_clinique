@@ -43,11 +43,11 @@ export function MedicationInventory({
       medication.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       medication.dci?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = !categoryFilter || 
+    const matchesCategory = !categoryFilter || categoryFilter === "all" ||
       medication.category?.toLowerCase() === categoryFilter.toLowerCase();
     
     const stock = getMedicationStock(medication.id);
-    const matchesStock = !stockFilter || 
+    const matchesStock = !stockFilter || stockFilter === "all" ||
       (stockFilter === 'low' && stock.quantity < stock.threshold) ||
       (stockFilter === 'expiring' && stock.expiryDate < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)) ||
       (stockFilter === 'out' && stock.quantity === 0);

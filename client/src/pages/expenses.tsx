@@ -78,10 +78,10 @@ export default function ExpensesPage() {
       expense.supplier?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       expense.category.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = !categoryFilter || expense.category === categoryFilter;
+    const matchesCategory = !categoryFilter || categoryFilter === "all" || expense.category === categoryFilter;
     
     const expenseMonth = new Date(expense.expenseDate).toISOString().slice(0, 7);
-    const matchesMonth = !monthFilter || expenseMonth === monthFilter;
+    const matchesMonth = !monthFilter || monthFilter === "all" || expenseMonth === monthFilter;
     
     return matchesSearch && matchesCategory && matchesMonth;
   });
@@ -211,7 +211,7 @@ export default function ExpensesPage() {
                 <SelectValue placeholder="Toutes catégories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes catégories</SelectItem>
+                <SelectItem value="all">Toutes catégories</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}
@@ -225,7 +225,7 @@ export default function ExpensesPage() {
                 <SelectValue placeholder="Tous les mois" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les mois</SelectItem>
+                <SelectItem value="all">Tous les mois</SelectItem>
                 <SelectItem value={currentMonth}>Ce mois</SelectItem>
                 <SelectItem value="2024-01">Janvier 2024</SelectItem>
                 <SelectItem value="2024-02">Février 2024</SelectItem>
